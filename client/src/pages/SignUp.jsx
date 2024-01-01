@@ -1,18 +1,64 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const SignUp = () => {
+  let [formData, setFormData] = useState({});
+  let [error, setError] = useState(null);
+  let [success, setSuccess] = useState(null);
+  let [isLoading, setIsLoading] = useState(false);
+  let formRef = useRef();
+  let submitBtnRef = useRef();
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const handleSubmit = async (e) => {
+    setError(null);
+    setSuccess(null);
+    setIsLoading(true);
+    submitBtnRef.current.disabled = true;
+    e.preventDefault();
+    const data = await fetch("/api/auth/sign-up", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const res = await data.json();
+    if (!res.success) {
+      setError(res.message);
+    } else {
+      formRef.current.reset();
+    }
+    setSuccess(res.message);
+    setIsLoading(false);
+    submitBtnRef.current.disabled = false;
+    console.log(res);
+  };
   return (
-    <div className="flex flex-col max-w-md mx-auto">
-      <h2 className="uppercase text-3xl text-center font-semibold my-10">
+    <div className="flex flex-col max-w-md mx-auto  px-3 ">
+      <h2 className="uppercase text-3xl text-center font-semibold my-8">
         Sign Up
       </h2>
-      <form className="flex flex-col px-3 gap-4" action="">
+      <p
+        className={`font-semibold my-2 ${
+          error ? "text-red-500" : "text-green-500"
+        }`}
+      >
+        {error ?? success}
+      </p>
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4"
+        action=""
+      >
         <input
           type="text"
-          name="username"
-          id="username"
-          placeholder="Username"
+          name="nickname"
+          id="nickname"
+          onChange={handleChange}
+          placeholder="nickname"
           className="rounded-lg bg-slate-200 p-2"
         />
 
@@ -20,6 +66,7 @@ const SignUp = () => {
           type="email"
           name="email"
           id="email"
+          onChange={handleChange}
           placeholder="Email"
           className="rounded-lg bg-slate-200 p-2"
         />
@@ -27,19 +74,21 @@ const SignUp = () => {
           type="password"
           name="password"
           id="password"
+          onChange={handleChange}
           placeholder="Password"
           className="rounded-lg bg-slate-200 p-2"
         />
         <button
+          ref={submitBtnRef}
           type="submit"
           className="uppercase bg-cyan-400 rounded-xl p-2 font-semibold text-white "
         >
-          Sign Up
+          {isLoading ? "Loading..." : "Sign Up"}
         </button>
       </form>
       <p className="text-center text-gray-500 my-4">
-        Already have an account?{" "}
-        <Link to="/sign-in" className="text-blue-400 font-semibold">
+        Already have an account?
+        <Link to="/sign-in" className="text-blue-400 font-semibold ml-2">
           Sign in
         </Link>
       </p>
