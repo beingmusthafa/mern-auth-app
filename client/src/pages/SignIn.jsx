@@ -1,17 +1,23 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const SignIn = () => {
   let [formData, setFormData] = useState({});
-  let [error, setError] = useState(null);
-  let [isLoading, setIsLoading] = useState(false);
+  const { isLoading, error } = useSelector((state) => state.user);
   let submitBtnRef = useRef();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
-    setError(null);
-    setIsLoading(true);
+    dispatch(signInStart());
     submitBtnRef.current.disabled = true;
     e.preventDefault();
     const data = await fetch("/api/auth/sign-in", {
@@ -23,9 +29,11 @@ const SignIn = () => {
     });
     const res = await data.json();
     if (!res.success) {
-      setError(res.message);
+      dispatch(signInFailure(res.message));
+    } else {
+      dispatch(signInSuccess(res.user));
+      navigate("/");
     }
-    setIsLoading(false);
     submitBtnRef.current.disabled = false;
     console.log(res);
   };
