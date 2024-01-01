@@ -6,6 +6,7 @@ import {
   signInFailure,
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import GoogleAuth from "../components/GoogleAuth";
 
 const SignIn = () => {
   let [formData, setFormData] = useState({});
@@ -75,9 +76,7 @@ const SignIn = () => {
           Sign up
         </Link>
       </p>
-      <button className=" bg-red-400 rounded-xl p-2 font-semibold text-white max-w-fit mx-auto">
-        Sign in with Google
-      </button>
+      <GoogleAuth />
     </div>
   );
 };
