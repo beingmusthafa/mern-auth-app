@@ -29,6 +29,7 @@ export const signin = async (req, res, next) => {
   }
   const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET);
   const { password: hashedPassword, ...rest } = existingUser._doc;
+  req.session.user = rest;
   res
     .cookie("access_token", token, {
       httpOnly: true,
@@ -48,6 +49,7 @@ export const googleSignin = async (req, res, next) => {
   if (existingUser) {
     const token = jwt.sign({ id: existingUser?._id }, process.env.JWT_SECRET);
     const { password: hashedPassword, ...rest } = existingUser?._doc;
+    req.session.user = rest;
     res
       .cookie("access_token", token, {
         httpOnly: true,
@@ -71,10 +73,12 @@ export const googleSignin = async (req, res, next) => {
       email,
       password: hashedPassword,
       profileImage: imageUrl,
+      externalAuth: true,
     });
     newUser.save();
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
     const { password: hashedPassword2, ...rest } = newUser._doc;
+    req.session.user = rest;
     res
       .cookie("access_token", token, {
         httpOnly: true,
