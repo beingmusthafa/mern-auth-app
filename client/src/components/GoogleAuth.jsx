@@ -25,7 +25,7 @@ const GoogleAuth = () => {
       const data = await res.json();
       console.log("data", data);
 
-      dispatch(signInSuccess(data));
+      dispatch(signInSuccess(data.user));
     } catch (error) {
       console.log(error);
     }

@@ -55,10 +55,10 @@ const SignUp = () => {
       >
         <input
           type="text"
-          name="nickname"
-          id="nickname"
+          name="username"
+          id="username"
           onChange={handleChange}
-          placeholder="nickname"
+          placeholder="Username"
           className="rounded-lg bg-slate-200 p-2"
         />
 

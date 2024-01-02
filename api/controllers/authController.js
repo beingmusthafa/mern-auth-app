@@ -73,7 +73,7 @@ export const googleSignin = async (req, res, next) => {
       profileImage: imageUrl,
     });
     newUser.save();
-    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
     const { password: hashedPassword2, ...rest } = newUser._doc;
     res
       .cookie("access_token", token, {
