@@ -6,10 +6,16 @@ export const updateProfileImage = async (req, res, next) => {
   console.log(url);
   console.log(req.session.user);
   try {
-    await Users.findByIdAndUpdate(req.session.user._id, { profileImage: url });
+    const newDetails = await Users.findByIdAndUpdate(req.session.user._id, {
+      profileImage: url,
+    });
     res
       .status(200)
-      .json({ success: true, message: "Profile pic updated successfully" });
+      .json({
+        success: true,
+        message: "Profile pic updated successfully",
+        newDetails,
+      });
   } catch (error) {
     next(error);
   }
