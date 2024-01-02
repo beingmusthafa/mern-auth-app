@@ -92,3 +92,25 @@ export const googleSignin = async (req, res, next) => {
       });
   }
 };
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const user = await Users.findById(req.session.user._id);
+    if (!bcryptjs.compareSync(oldPassword, user.password)) {
+      return next(customError(400, "Incorrect password!"));
+    }
+    const hashedPassword = bcryptjs.hashSync(
+      newPassword,
+      bcryptjs.genSaltSync(10)
+    );
+    await Users.findByIdAndUpdate(req.session.user._id, {
+      password: hashedPassword,
+    });
+    res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
