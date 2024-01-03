@@ -1,5 +1,8 @@
-import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { updateCurrentUser } from "../redux/user/userSlice";
 
 const SignUp = () => {
   let [formData, setFormData] = useState({});
@@ -8,15 +11,38 @@ const SignUp = () => {
   let [isLoading, setIsLoading] = useState(false);
   let formRef = useRef();
   let submitBtnRef = useRef();
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+    }
+  }, [currentUser]);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
+    e.preventDefault();
     setError(null);
     setSuccess(null);
     setIsLoading(true);
+    if (Object.keys(formData).length < 3) {
+      setError("Please fill all the fields");
+      setIsLoading(false);
+      return;
+    }
+    if (!formData.email.includes("@")) {
+      setError("Please enter a valid email");
+      setIsLoading(false);
+      return;
+    }
+    if (formData.password.trim().length < 8) {
+      setError("Password must be at least 8 characters");
+      setIsLoading(false);
+      return;
+    }
     submitBtnRef.current.disabled = true;
-    e.preventDefault();
     const data = await fetch("/api/auth/sign-up", {
       method: "POST",
       headers: {
@@ -31,6 +57,7 @@ const SignUp = () => {
       formRef.current.reset();
     }
     setSuccess(res.message);
+    dispatch(updateCurrentUser(res.user));
     setIsLoading(false);
     submitBtnRef.current.disabled = false;
     console.log(res);

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   signInStart,
@@ -10,14 +10,22 @@ import GoogleAuth from "../components/GoogleAuth";
 
 const SignIn = () => {
   let [formData, setFormData] = useState({});
-  const { isLoading, error } = useSelector((state) => state.user);
+  let [error, setError] = useState(false);
+  const { isLoading } = useSelector((state) => state.user);
   let submitBtnRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+    }
+  }, [currentUser]);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
+    setError(false);
     dispatch(signInStart());
     submitBtnRef.current.disabled = true;
     e.preventDefault();
@@ -31,6 +39,7 @@ const SignIn = () => {
     const res = await data.json();
     if (!res.success) {
       dispatch(signInFailure(res.message));
+      setError(res.message);
     } else {
       dispatch(signInSuccess(res.user));
       navigate("/");
@@ -72,7 +81,7 @@ const SignIn = () => {
       </form>
       <p className="text-center text-gray-500 my-4">
         Dont have an account?
-        <Link to="/sign-in" className="text-blue-400 font-semibold ml-2">
+        <Link to="/sign-up" className="text-blue-400 font-semibold ml-2">
           Sign up
         </Link>
       </p>
