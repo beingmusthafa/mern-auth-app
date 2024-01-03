@@ -2,8 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import session from "express-session";
+import { verifyToken } from "./middlewares/verifyToken.js";
+import cookieParser from "cookie-parser";
 dotenv.config();
 mongoose
   .connect(process.env.MONGO_URL)
@@ -14,9 +17,12 @@ app.use(
   session({ secret: "mySessionSecret", resave: true, saveUninitialized: true })
 );
 app.use(express.json());
+app.use(cookieParser());
 // app.use(express.urlencoded({ extended: true }));
-app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+app.use(verifyToken);
+app.use("/api/user", userRouter);
+app.use("/api/admin", adminRouter);
 
 app.use((error, req, res, next) => {
   console.log(error);
