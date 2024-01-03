@@ -5,12 +5,14 @@ import { app } from "../firebase/firebase.js";
 import { updateCurrentUser, signOut } from "../redux/user/userSlice.js";
 import { Link, useNavigate } from "react-router-dom";
 import loadingGif from "../assets/loading.gif";
+import Popup from "../components/Popup.jsx";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
   let [image, setImage] = useState(null);
   let [error, setError] = useState(null);
   let [isProcessing, setIsProcessing] = useState(false);
+  let [openPopup, setOpenPopup] = useState(false);
   const navigate = useNavigate();
   const imageUploadRef = useRef();
   const usernameRef = useRef();
@@ -98,8 +100,31 @@ const Profile = () => {
     dispatch(signOut());
     navigate("/sign-in");
   }
+  async function deleteAccount() {
+    setOpenPopup(false);
+    setIsProcessing(true);
+    const res = await fetch("/api/user/delete-account", {
+      method: "DELETE",
+    });
+    const data = await res.json();
+    if (!data.success) {
+      console.log(data.message);
+      setIsProcessing(false);
+      return;
+    }
+    dispatch(signOut());
+    setIsProcessing(false);
+    navigate("/sign-in");
+  }
   return (
     <div className="flex flex-col items-center max-w-sm mx-auto mb-10 ">
+      {openPopup && (
+        <Popup
+          text={"Do you want to delete your account?"}
+          onCancel={() => setOpenPopup(false)}
+          onConfirm={deleteAccount}
+        />
+      )}
       <input
         ref={imageUploadRef}
         onChange={(e) => setImage(e.target.files[0])}
@@ -166,7 +191,10 @@ const Profile = () => {
         Change password
       </Link>
       <div className="flex justify-between w-full">
-        <div className="text-red-500 font-semibold cursor-pointer">
+        <div
+          onClick={() => setOpenPopup(true)}
+          className="text-red-500 font-semibold cursor-pointer"
+        >
           Delete account
         </div>
         <div

@@ -72,3 +72,16 @@ export const changePassword = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteAccount = async (req, res, next) => {
+  try {
+    await Users.findByIdAndDelete(req.user._id);
+    res.clearCookie("access_token");
+    req.user = null;
+    res
+      .status(200)
+      .json({ success: true, message: "Account deleted successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
