@@ -4,6 +4,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../firebase/firebase.js";
 import { useParams, useNavigate } from "react-router-dom";
 import loadingGif from "../assets/loading.gif";
+import Popup from "../components/Popup.jsx";
 
 const EditUser = () => {
   const { userId } = useParams();
@@ -12,6 +13,7 @@ const EditUser = () => {
   let [isProcessing, setIsProcessing] = useState(false);
   let [image, setImage] = useState(null);
   let [error, setError] = useState(null);
+  let [openPopup, setOpenPopup] = useState(false);
   const imageUploadRef = useRef();
   const usernameRef = useRef();
   const emailRef = useRef();
@@ -105,9 +107,13 @@ const EditUser = () => {
     setError(data.message);
     setIsProcessing(false);
   }
+
   async function deleteUser() {
+    setOpenPopup(false);
     setIsProcessing(true);
-    const res = await fetch(`/api/admin/delete-user/${userId}`);
+    const res = await fetch(`/api/admin/delete-user/${userId}`, {
+      method: "DELETE",
+    });
     const data = await res.json();
     if (!data.success) {
       setError(data.message);
@@ -127,6 +133,13 @@ const EditUser = () => {
 
   return (
     <div className="flex flex-col items-center max-w-sm mx-auto mb-10 ">
+      {openPopup && (
+        <Popup
+          text={"Do you want to delete this user?"}
+          onCancel={() => setOpenPopup(false)}
+          onConfirm={deleteUser}
+        />
+      )}
       <input
         ref={imageUploadRef}
         onChange={(e) => setImage(e.target.files[0])}
@@ -187,7 +200,10 @@ const EditUser = () => {
         </button>
       </form>
       <div className="flex justify-between w-full">
-        <div className="text-red-500 font-semibold cursor-pointer">
+        <div
+          onClick={() => setOpenPopup(true)}
+          className="text-red-500 font-semibold cursor-pointer"
+        >
           Delete account
         </div>
       </div>

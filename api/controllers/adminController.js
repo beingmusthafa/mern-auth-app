@@ -82,3 +82,15 @@ export const editUserImage = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteUserById = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    await Users.findByIdAndDelete(userId);
+    res
+      .status(200)
+      .json({ success: true, message: "Account deleted successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
