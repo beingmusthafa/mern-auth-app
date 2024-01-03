@@ -1,3 +1,4 @@
+import { useDispatch } from "react-redux";
 import React, { useState, useRef, useEffect } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../firebase/firebase.js";
@@ -24,7 +25,6 @@ const EditUser = () => {
           setError(data.message);
           return;
         }
-        console.log(data);
         setUser(data.user);
         setIsLoading(false);
       });
@@ -40,7 +40,6 @@ const EditUser = () => {
   }, [image]);
   function uploadImageToFirebase(image) {
     setIsProcessing(true);
-    console.log("image", image);
     const storage = getStorage(app);
     const storageRef = ref(
       storage,
@@ -48,17 +47,22 @@ const EditUser = () => {
     );
     uploadBytes(storageRef, image).then(async (snapshot) => {
       const url = await getDownloadURL(storageRef);
-      fetch("/api/user/update-profile-image", {
-        method: "POST",
+      fetch("/api/admin/edit-user-image", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ imageUrl: url }),
+        body: JSON.stringify({ imageUrl: url, userId }),
       })
         .then(async (res) => {
           const result = await res.json();
-          console.log(result.message);
-          setIsProcessing(false);
+          if (!result.success) {
+            setError(result.message);
+            setIsProcessing(false);
+            return;
+          }
+          console.log(result.newDetails);
+          setUser(result.newDetails);
         })
         .catch((error) => console.log(error));
       setIsProcessing(false);
@@ -71,7 +75,6 @@ const EditUser = () => {
     setError(null);
     const newUsername = usernameRef.current.value.trim();
     const newEmail = emailRef.current.value.trim();
-    console.log({ newUsername, newEmail });
     if (newUsername.length < 3) {
       setError("Username must be at least 3 characters long");
       setIsProcessing(false);
@@ -126,7 +129,7 @@ const EditUser = () => {
     <div className="flex flex-col items-center max-w-sm mx-auto mb-10 ">
       <input
         ref={imageUploadRef}
-        onChange={(e) => setImage(e.target.value)}
+        onChange={(e) => setImage(e.target.files[0])}
         type="file"
         hidden
         name="image"
@@ -135,7 +138,7 @@ const EditUser = () => {
       <img
         src={user.profileImage}
         alt=""
-        className="w-24 h-24 mx-auto rounded-full cursor-pointer my-4"
+        className="w-24 h-24 mx-auto rounded-full cursor-pointer object-cover my-4"
         onClick={() => imageUploadRef.current.click()}
       />
       {isProcessing ? (

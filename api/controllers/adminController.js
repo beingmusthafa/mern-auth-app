@@ -8,6 +8,7 @@ export const getUsers = async (req, res, next) => {
   try {
     const users = await Users.find({
       $or: [{ email: { $regex: regex } }, { username: { $regex: regex } }],
+      _id: { $ne: req.user._id },
     }).select({ password: 0 });
     res.status(200).json({ users });
   } catch (error) {
@@ -53,6 +54,28 @@ export const editUser = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
+      newDetails,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const editUserImage = async (req, res, next) => {
+  const url = req.body.imageUrl;
+  const userId = req.body.userId;
+  console.log(url);
+  try {
+    const newDetails = await Users.findByIdAndUpdate(
+      userId,
+      {
+        profileImage: url,
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Profile pic updated successfully",
       newDetails,
     });
   } catch (error) {
