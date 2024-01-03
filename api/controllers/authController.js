@@ -3,7 +3,6 @@ import { customError } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 export const signup = async (req, res, next) => {
-  console.log(req.body);
   const { username, email, password } = req.body;
   try {
     if (await Users.exists({ email })) {
@@ -29,7 +28,6 @@ export const signin = async (req, res, next) => {
   }
   const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET);
   const { password: hashedPassword, ...rest } = existingUser._doc;
-  req.session.user = rest;
   res
     .cookie("access_token", token, {
       httpOnly: true,
@@ -49,7 +47,6 @@ export const googleSignin = async (req, res, next) => {
   if (existingUser) {
     const token = jwt.sign({ id: existingUser?._id }, process.env.JWT_SECRET);
     const { password: hashedPassword, ...rest } = existingUser?._doc;
-    req.session.user = rest;
     res
       .cookie("access_token", token, {
         httpOnly: true,
@@ -78,7 +75,6 @@ export const googleSignin = async (req, res, next) => {
     newUser.save();
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
     const { password: hashedPassword2, ...rest } = newUser._doc;
-    req.session.user = rest;
     res
       .cookie("access_token", token, {
         httpOnly: true,
@@ -93,23 +89,11 @@ export const googleSignin = async (req, res, next) => {
   }
 };
 
-export const changePassword = async (req, res, next) => {
+export const signOut = async (req, res, next) => {
   try {
-    const { oldPassword, newPassword } = req.body;
-    const user = await Users.findById(req.session.user._id);
-    if (!bcryptjs.compareSync(oldPassword, user.password)) {
-      return next(customError(400, "Incorrect password!"));
-    }
-    const hashedPassword = bcryptjs.hashSync(
-      newPassword,
-      bcryptjs.genSaltSync(10)
-    );
-    await Users.findByIdAndUpdate(req.session.user._id, {
-      password: hashedPassword,
-    });
-    res
-      .status(200)
-      .json({ success: true, message: "Password changed successfully!" });
+    res.clearCookie("access_token");
+    req.user = null;
+    res.status(200).json({ success: true, message: "User signed out!" });
   } catch (error) {
     next(error);
   }

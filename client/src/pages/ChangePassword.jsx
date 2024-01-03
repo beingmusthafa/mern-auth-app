@@ -23,7 +23,7 @@ const ChangePassword = () => {
       setError("New password must be at least 8 characters long");
       return;
     }
-    const res = await fetch("/api/auth/change-password", {
+    const res = await fetch("/api/user/change-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +47,7 @@ const ChangePassword = () => {
         </label>
         <input
           ref={oldPasswordRef}
-          type="text"
+          type="password"
           name="oldPassword"
           className={`mb-4 rounded-lg bg-slate-200 p-2 `}
         />
@@ -56,7 +56,7 @@ const ChangePassword = () => {
         </label>
         <input
           ref={newPasswordRef}
-          type="text"
+          type="password"
           name="newPassword"
           className={`mb-4 rounded-lg bg-slate-200 p-2 `}
         />
