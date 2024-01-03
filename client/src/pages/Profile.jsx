@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../firebase/firebase.js";
-import { updateCurrentUser } from "../redux/user/userSlice.js";
-import { Link } from "react-router-dom";
+import { updateCurrentUser, signOut } from "../redux/user/userSlice.js";
+import { Link, useNavigate } from "react-router-dom";
 import loadingGif from "../assets/loading.gif";
 
 const Profile = () => {
@@ -11,6 +11,7 @@ const Profile = () => {
   let [image, setImage] = useState(null);
   let [error, setError] = useState(null);
   let [isProcessing, setIsProcessing] = useState(false);
+  const navigate = useNavigate();
   const imageUploadRef = useRef();
   const usernameRef = useRef();
   const emailRef = useRef();
@@ -87,6 +88,16 @@ const Profile = () => {
     updateCurrentUser(data.newDetails);
     setError(data.message);
   }
+  async function handleSignOut() {
+    const res = await fetch("/api/auth/sign-out");
+    const data = await res.json();
+    if (!data.success) {
+      console.log(data.message);
+      return;
+    }
+    dispatch(signOut());
+    navigate("/sign-in");
+  }
   return (
     <div className="flex flex-col items-center max-w-sm mx-auto mb-10 ">
       <input
@@ -158,7 +169,10 @@ const Profile = () => {
         <div className="text-red-500 font-semibold cursor-pointer">
           Delete account
         </div>
-        <div className="text-red-500 font-semibold cursor-pointer">
+        <div
+          onClick={handleSignOut}
+          className="text-red-500 font-semibold cursor-pointer"
+        >
           Sign out
         </div>
       </div>
