@@ -64,7 +64,6 @@ export const editUser = async (req, res, next) => {
 export const editUserImage = async (req, res, next) => {
   const url = req.body.imageUrl;
   const userId = req.body.userId;
-  console.log(url);
   try {
     const newDetails = await Users.findByIdAndUpdate(
       userId,
