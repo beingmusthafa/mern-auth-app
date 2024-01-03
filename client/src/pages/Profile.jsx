@@ -1,17 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../firebase/firebase.js";
 import { updateCurrentUser } from "../redux/user/userSlice.js";
 import { Link } from "react-router-dom";
+import loadingGif from "../assets/loading.gif";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
   let [image, setImage] = useState(null);
   let [error, setError] = useState(null);
+  let [isProcessing, setIsProcessing] = useState(false);
   const imageUploadRef = useRef();
   const usernameRef = useRef();
   const emailRef = useRef();
+  const dispatch = useDispatch();
   useEffect(() => {
     if (currentUser.externalAuth) {
       usernameRef.current.disabled = true;
@@ -40,7 +43,7 @@ const Profile = () => {
         .then(async (res) => {
           const result = await res.json();
           if (result.success) {
-            updateCurrentUser(result.newDetails);
+            dispatch(updateCurrentUser(result.newDetails));
           }
           console.log(result.message);
         })
@@ -50,15 +53,18 @@ const Profile = () => {
 
   async function handleProfileUpdate(e) {
     e.preventDefault();
+    setIsProcessing(true);
     setError(null);
     const newUsername = usernameRef.current.value.trim();
     const newEmail = emailRef.current.value.trim();
     if (newUsername.length < 3) {
       setError("Username must be at least 3 characters long");
+      setIsProcessing(false);
       return;
     }
     if (!newEmail.includes("@") || newEmail.length < 7) {
       setError("Please enter a valid email");
+      setIsProcessing(false);
       return;
     }
     const res = await fetch("/api/user/update-profile", {
@@ -74,8 +80,10 @@ const Profile = () => {
     const data = await res.json();
     if (!data.success) {
       setError(data.message);
+      setIsProcessing(false);
       return;
     }
+    setIsProcessing(false);
     updateCurrentUser(data.newDetails);
     setError(data.message);
   }
@@ -83,7 +91,7 @@ const Profile = () => {
     <div className="flex flex-col items-center max-w-sm mx-auto mb-10 ">
       <input
         ref={imageUploadRef}
-        onChange={(e) => setImage(e.target.value)}
+        onChange={(e) => setImage(e.target.files[0])}
         type="file"
         hidden
         name="image"
@@ -95,6 +103,11 @@ const Profile = () => {
         className="w-24 h-24 mx-auto rounded-full cursor-pointer my-4"
         onClick={() => imageUploadRef.current.click()}
       />
+      {isProcessing ? (
+        <img className="h-10 w-10 mx-auto" src={loadingGif} alt="" />
+      ) : (
+        ""
+      )}
       <p className="font-semibold text-red-500 my-2">{error}</p>
       <p className="font-medium text-red-400">
         {currentUser.externalAuth
