@@ -1,6 +1,6 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 const Header = () => {
   const location = useLocation();
@@ -8,16 +8,17 @@ const Header = () => {
   return location.pathname.startsWith("/sign-") ? (
     <></>
   ) : (
-    <div className="bg-slate-500 flex justify-between p-4 text-white sticky top-0 w-full">
-      <div className="font-bold">Auth</div>
+    <div className="bg-slate-800 flex justify-between p-4 text-white sticky top-0 w-full font-semibold">
+      <Link to="/" className="font-bold text-xl">
+        AUTH
+      </Link>
       <ul className="flex gap-4">
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
+        {currentUser?.isAdmin && <Link to="/admin">Admin-dashboard</Link>}
         {currentUser ? (
           <Link to="/profile">
             <img
               className="h-7 w-7 rounded-full object-cover"
-              src={currentUser.profileImage}
+              src={currentUser?.profileImage}
               alt=""
             />
           </Link>
