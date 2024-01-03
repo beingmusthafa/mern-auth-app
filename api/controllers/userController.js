@@ -40,11 +40,9 @@ export const updateProfile = async (req, res, next) => {
         username: newUsername,
         email: newEmail,
       },
-      { new: true }
+      { new: true, projection: { password: 0 } }
     );
-    const { password: password, ...rest } = newDetails._doc;
-    req.session.user = rest;
-    console.log(req.session.user);
+    req.session.user = newDetails;
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
