@@ -10,10 +10,8 @@ export const verifyToken = (req, res, next) => {
         customError(403, "Invalid auth token. Please authenticate again")
       );
     } else {
-      console.log(decoded);
       if (!req.user) {
         req.user = await Users.findById(decoded.id);
-        console.log(req.user);
       }
       next();
     }

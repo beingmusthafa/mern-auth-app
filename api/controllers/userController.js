@@ -4,7 +4,6 @@ import bcryptjs from "bcryptjs";
 
 export const updateProfileImage = async (req, res, next) => {
   const url = req.body.imageUrl;
-  console.log(url);
   try {
     const newDetails = await Users.findByIdAndUpdate(req.user._id, {
       profileImage: url,
@@ -54,7 +53,6 @@ export const changePassword = async (req, res, next) => {
   try {
     const { oldPassword, newPassword } = req.body;
     const user = req.user;
-    console.log("user", user);
     if (!bcryptjs.compareSync(oldPassword, user.password)) {
       return next(customError(400, "Incorrect password!"));
     }
