@@ -1,18 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  signInStart,
-  signInSuccess,
-  signInFailure,
-} from "../redux/user/userSlice";
+import { signInSuccess, signInFailure } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import GoogleAuth from "../components/GoogleAuth";
 
 const SignIn = () => {
-  let [formData, setFormData] = useState({});
-  let [error, setError] = useState(false);
-  const { isLoading } = useSelector((state) => state.user);
-  let submitBtnRef = useRef();
+  const [formData, setFormData] = useState({});
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const submitBtnRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
@@ -25,31 +21,37 @@ const SignIn = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
-    setError(false);
-    dispatch(signInStart());
-    submitBtnRef.current.disabled = true;
     e.preventDefault();
-    const data = await fetch(
-      import.meta.env.VITE_API_BASE_URL + "/api/auth/sign-in",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+    setError(false);
+    submitBtnRef.current.disabled = true;
+    setLoading(true);
+    try {
+      const data = await fetch(
+        import.meta.env.VITE_API_BASE_URL + "/api/auth/sign-in",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      const res = await data.json();
+      setLoading(false);
+      if (!res.success) {
+        dispatch(signInFailure(res.message));
+        setError(res.message);
+      } else {
+        dispatch(signInSuccess(res.user));
+        localStorage.setItem("token", res.token);
+        navigate("/");
       }
-    );
-    const res = await data.json();
-    if (!res.success) {
-      dispatch(signInFailure(res.message));
-      setError(res.message);
-    } else {
-      dispatch(signInSuccess(res.user));
-      localStorage.setItem("token", res.token);
-      navigate("/");
+      submitBtnRef.current.disabled = false;
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
-    submitBtnRef.current.disabled = false;
-    console.log(res);
   };
   return (
     <div className="flex flex-col max-w-md mx-auto px-3 ">
@@ -80,7 +82,7 @@ const SignIn = () => {
           type="submit"
           className="uppercase bg-cyan-400 rounded-xl p-2 font-semibold text-white "
         >
-          {isLoading ? "Loading..." : "Sign In"}
+          {loading ? "Loading..." : "Sign In"}
         </button>
       </form>
       <p className="text-center text-gray-500 my-4">

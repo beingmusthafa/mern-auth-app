@@ -9,10 +9,10 @@ import Popup from "../components/Popup.jsx";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
-  let [image, setImage] = useState(null);
-  let [error, setError] = useState(null);
-  let [isProcessing, setIsProcessing] = useState(false);
-  let [openPopup, setOpenPopup] = useState(false);
+  const [image, setImage] = useState(null);
+  const [error, setError] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
   const navigate = useNavigate();
   const imageUploadRef = useRef();
   const usernameRef = useRef();

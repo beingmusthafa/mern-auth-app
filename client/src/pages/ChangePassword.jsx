@@ -2,10 +2,10 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ChangePassword = () => {
-  let [error, setError] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  let oldPasswordRef = useRef();
-  let newPasswordRef = useRef();
+  const oldPasswordRef = useRef();
+  const newPasswordRef = useRef();
   async function handleSubmit(e) {
     e.preventDefault();
     let oldPassword = oldPasswordRef.current.value.trim();

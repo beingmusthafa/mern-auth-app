@@ -3,10 +3,10 @@ import UserCard from "../components/UserCard";
 import loadingGif from "../assets/loading.gif";
 
 const ViewUsers = () => {
-  let [users, setUsers] = useState([]);
-  let [search, setSearch] = useState("");
-  let [isLoading, setIsloading] = useState(false);
-  let searchRef = useRef();
+  const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
+  const [isLoading, setIsloading] = useState(false);
+  const searchRef = useRef();
   useEffect(() => {
     getUsers();
   }, [search]);

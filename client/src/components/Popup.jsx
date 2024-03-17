@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 
 const Popup = ({ text, onCancel, onConfirm }) => {
-  let popupRef = useRef();
+  const popupRef = useRef();
   return (
     <div
       ref={popupRef}

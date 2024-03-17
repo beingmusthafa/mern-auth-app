@@ -8,12 +8,12 @@ import Popup from "../components/Popup.jsx";
 
 const EditUser = () => {
   const { userId } = useParams();
-  let [user, setUser] = useState({});
-  let [isLoading, setIsLoading] = useState(true);
-  let [isProcessing, setIsProcessing] = useState(false);
-  let [image, setImage] = useState(null);
-  let [error, setError] = useState(null);
-  let [openPopup, setOpenPopup] = useState(false);
+  const [user, setUser] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [image, setImage] = useState(null);
+  const [error, setError] = useState(null);
+  const [openPopup, setOpenPopup] = useState(false);
   const imageUploadRef = useRef();
   const usernameRef = useRef();
   const emailRef = useRef();

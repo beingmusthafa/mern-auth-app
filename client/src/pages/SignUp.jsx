@@ -5,12 +5,12 @@ import { useSelector } from "react-redux";
 import { updateCurrentUser } from "../redux/user/userSlice";
 
 const SignUp = () => {
-  let [formData, setFormData] = useState({});
-  let [error, setError] = useState(null);
-  let [success, setSuccess] = useState(null);
-  let [isLoading, setIsLoading] = useState(false);
-  let formRef = useRef();
-  let submitBtnRef = useRef();
+  const [formData, setFormData] = useState({});
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const formRef = useRef();
+  const submitBtnRef = useRef();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
