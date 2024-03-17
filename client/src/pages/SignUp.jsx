@@ -1,8 +1,6 @@
-import { useDispatch } from "react-redux";
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { updateCurrentUser } from "../redux/user/userSlice";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
@@ -11,7 +9,6 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef();
   const submitBtnRef = useRef();
-  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   useEffect(() => {
