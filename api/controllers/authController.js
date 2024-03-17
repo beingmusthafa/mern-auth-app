@@ -28,17 +28,12 @@ export const signin = async (req, res, next) => {
   }
   const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET);
   const { password: hashedPassword, ...rest } = existingUser._doc;
-  res
-    .cookie("access_token", token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
-    })
-    .status(200)
-    .json({
-      success: true,
-      message: "User logged in successfully",
-      user: rest,
-    });
+  res.status(200).json({
+    success: true,
+    message: "User logged in successfully",
+    user: rest,
+    token,
+  });
 };
 
 export const googleSignin = async (req, res, next) => {
@@ -47,17 +42,12 @@ export const googleSignin = async (req, res, next) => {
   if (existingUser) {
     const token = jwt.sign({ id: existingUser?._id }, process.env.JWT_SECRET);
     const { password: hashedPassword, ...rest } = existingUser?._doc;
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
-      })
-      .status(200)
-      .json({
-        success: true,
-        message: "User logged in successfully",
-        user: rest,
-      });
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      user: rest,
+      token,
+    });
   } else {
     const salt = bcryptjs.genSaltSync(10);
     const generatedPassword = Math.random().toString(36).slice(-8);
@@ -75,24 +65,18 @@ export const googleSignin = async (req, res, next) => {
     newUser.save();
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
     const { password: hashedPassword2, ...rest } = newUser._doc;
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
-      })
-      .status(200)
-      .json({
-        success: true,
-        message: "User logged in successfully",
-        user: rest,
-      });
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      user: rest,
+      token,
+    });
   }
 };
 
 export const signOut = async (req, res, next) => {
   try {
-    res.clearCookie("access_token");
-    req.user = null;
+    req.session.user = null;
     res.status(200).json({ success: true, message: "User signed out!" });
   } catch (error) {
     next(error);

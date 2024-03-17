@@ -23,13 +23,17 @@ const ChangePassword = () => {
       setError("New password must be at least 8 characters long");
       return;
     }
-    const res = await fetch("/api/user/change-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ oldPassword, newPassword }),
-    });
+    const res = await fetch(
+      import.meta.env.VITE_API_BASE_URL + "/api/user/change-password",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ oldPassword, newPassword }),
+      }
+    );
     const data = await res.json();
     if (!data.success) {
       setError(data.message);

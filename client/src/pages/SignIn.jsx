@@ -29,19 +29,23 @@ const SignIn = () => {
     dispatch(signInStart());
     submitBtnRef.current.disabled = true;
     e.preventDefault();
-    const data = await fetch("/api/auth/sign-in", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    const data = await fetch(
+      import.meta.env.VITE_API_BASE_URL + "/api/auth/sign-in",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
     const res = await data.json();
     if (!res.success) {
       dispatch(signInFailure(res.message));
       setError(res.message);
     } else {
       dispatch(signInSuccess(res.user));
+      localStorage.setItem("token", res.token);
       navigate("/");
     }
     submitBtnRef.current.disabled = false;

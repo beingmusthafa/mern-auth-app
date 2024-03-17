@@ -36,13 +36,17 @@ const Profile = () => {
     );
     uploadBytes(storageRef, image).then(async (snapshot) => {
       const url = await getDownloadURL(storageRef);
-      fetch("/api/user/update-profile-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ imageUrl: url }),
-      })
+      fetch(
+        import.meta.env.VITE_API_BASE_URL + "/api/user/update-profile-image",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ imageUrl: url }),
+        }
+      )
         .then(async (res) => {
           const result = await res.json();
           if (result.success) {
@@ -70,16 +74,20 @@ const Profile = () => {
       setIsProcessing(false);
       return;
     }
-    const res = await fetch("/api/user/update-profile", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        newUsername,
-        newEmail,
-      }),
-    });
+    const res = await fetch(
+      import.meta.env.VITE_API_BASE_URL + "/api/user/update-profile",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          newUsername,
+          newEmail,
+        }),
+      }
+    );
     const data = await res.json();
     if (!data.success) {
       setError(data.message);
@@ -91,21 +99,35 @@ const Profile = () => {
     setError(data.message);
   }
   async function handleSignOut() {
-    const res = await fetch("/api/auth/sign-out");
+    const res = await fetch(
+      import.meta.env.VITE_API_BASE_URL + "/api/auth/sign-out",
+      {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     const data = await res.json();
     if (!data.success) {
       console.log(data.message);
       return;
     }
     dispatch(signOut());
+    localStorage.removeItem("token");
     navigate("/sign-in");
   }
   async function deleteAccount() {
     setOpenPopup(false);
     setIsProcessing(true);
-    const res = await fetch("/api/user/delete-account", {
-      method: "DELETE",
-    });
+    const res = await fetch(
+      import.meta.env.VITE_API_BASE_URL + "/api/user/delete-account",
+      {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     const data = await res.json();
     if (!data.success) {
       console.log(data.message);
@@ -113,6 +135,7 @@ const Profile = () => {
       return;
     }
     dispatch(signOut());
+    localStorage.removeItem("token");
     setIsProcessing(false);
     navigate("/sign-in");
   }

@@ -20,7 +20,13 @@ const EditUser = () => {
   const navigate = useNavigate();
   useEffect(() => {
     setIsLoading(true);
-    fetch(`/api/admin/get-user-by-id/${userId}`)
+    fetch(`/api/admin/get-user-by-id/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
@@ -49,10 +55,11 @@ const EditUser = () => {
     );
     uploadBytes(storageRef, image).then(async (snapshot) => {
       const url = await getDownloadURL(storageRef);
-      fetch("/api/admin/edit-user-image", {
+      fetch(import.meta.env.VITE_API_BASE_URL + "/api/admin/edit-user-image", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ imageUrl: url, userId }),
       })
@@ -87,17 +94,21 @@ const EditUser = () => {
       setIsProcessing(false);
       return;
     }
-    const res = await fetch("/api/admin/edit-user", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        newUsername,
-        newEmail,
-        userId,
-      }),
-    });
+    const res = await fetch(
+      import.meta.env.VITE_API_BASE_URL + "/api/admin/edit-user",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          newUsername,
+          newEmail,
+          userId,
+        }),
+      }
+    );
     const data = await res.json();
     if (!data.success) {
       setError(data.message);
@@ -113,6 +124,10 @@ const EditUser = () => {
     setIsProcessing(true);
     const res = await fetch(`/api/admin/delete-user/${userId}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
     });
     const data = await res.json();
     if (!data.success) {

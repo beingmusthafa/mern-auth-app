@@ -6,7 +6,7 @@ import adminRouter from "./routes/adminRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import session from "express-session";
 import { verifyToken } from "./middlewares/verifyToken.js";
-import cookieParser from "cookie-parser";
+import cors from "cors";
 dotenv.config();
 mongoose
   .connect(process.env.MONGO_URL)
@@ -14,10 +14,16 @@ mongoose
   .catch((error) => console.log(error));
 const app = express();
 app.use(
+  cors({
+    origin: process.env.CLIENT_BASE_URL,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.use(
   session({ secret: "mySessionSecret", resave: true, saveUninitialized: true })
 );
 app.use(express.json());
-app.use(cookieParser());
 // app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use(verifyToken);

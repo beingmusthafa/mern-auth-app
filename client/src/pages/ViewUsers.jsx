@@ -12,7 +12,13 @@ const ViewUsers = () => {
   }, [search]);
   async function getUsers() {
     setIsloading(true);
-    const res = await fetch(`api/admin/get-users?search=${search}`);
+    const res = await fetch(`api/admin/get-users?search=${search}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     const data = await res.json();
     console.log(data.users);
     setUsers(data.users);

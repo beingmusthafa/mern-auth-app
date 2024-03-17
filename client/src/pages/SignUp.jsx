@@ -43,13 +43,16 @@ const SignUp = () => {
       return;
     }
     submitBtnRef.current.disabled = true;
-    const data = await fetch("/api/auth/sign-up", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    const data = await fetch(
+      import.meta.env.VITE_API_BASE_URL + "/api/auth/sign-up",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
     const res = await data.json();
     if (!res.success) {
       setError(res.message);
@@ -57,7 +60,6 @@ const SignUp = () => {
       formRef.current.reset();
     }
     setSuccess(res.message);
-    dispatch(updateCurrentUser(res.user));
     setIsLoading(false);
     submitBtnRef.current.disabled = false;
     console.log(res);
