@@ -3,17 +3,17 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 //component imports
 import Home from "./pages/Home.jsx";
-import SignIn from "./pages/SignIn.jsx";
-import SignUp from "./pages/SignUp.jsx";
-import Profile from "./pages/Profile.jsx";
-import About from "./pages/About.jsx";
-import Header from "./components/Header.jsx";
-import PrivateRoute from "./components/PrivateRoute.jsx";
-import ChangePassword from "./pages/changePassword.jsx";
-import ViewUsers from "./pages/ViewUsers.jsx";
-import AddUser from "./pages/AddUser.jsx";
-import EditUser from "./pages/EditUser.jsx";
-import AdminRoute from "./components/AdminRoute.jsx";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import Profile from "./pages/Profile";
+import About from "./pages/About";
+import Header from "./components/Header";
+import PrivateRoute from "./components/PrivateRoute";
+import ChangePassword from "./pages/ChangePassword";
+import ViewUsers from "./pages/ViewUsers";
+import AddUser from "./pages/AddUser";
+import EditUser from "./pages/EditUser";
+import AdminRoute from "./components/AdminRoute";
 const App = () => {
   return (
     <BrowserRouter>
