@@ -18,6 +18,7 @@ app.use(
     origin: process.env.CLIENT_BASE_URL,
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "PATCH", "OPTIONS", "DELETE"],
   })
 );
 app.use(
